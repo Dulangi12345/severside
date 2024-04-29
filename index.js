@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import got from 'got';
-
+import cors from 'cors'
 
 
 const app = express();
@@ -23,6 +23,11 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
+
+var corsOptions = {
+  origin: 'https://startling-duckanoo-c5860c.netlify.app',
+  optionsSuccessStatus: 200 
+}
 
 app.get('/', (req, res) => {
   res.send("Hello World");
