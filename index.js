@@ -18,6 +18,12 @@ const PORT = process.env.PORT || 6001;
 app.use(router);
 app.use(cors());
 
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://startling-duckanoo-c5860c.netlify.app');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
+
 app.get('/', (req, res) => {
   res.send("Hello World");
 });
