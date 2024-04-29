@@ -1,7 +1,7 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import axios from 'axios';
-import cors from 'cors';
+let express = require('express');
+let bodyParser = require('body-parser')
+let axios =require('axios')
+let cors = require('cors')
 
 const app = express();
 app.use(cors()); // Apply CORS middleware
@@ -18,6 +18,8 @@ app.use(router);
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'HEAD, GET, POST, PUT, PATCH, DELETE');
+
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
@@ -37,7 +39,7 @@ router.post('/api', async (req, res) => {
     console.log(response.data);
     console.log('External Server Status Code:', response.status);
     if (response.status === 201) {
-      res.json(response.data);
+      res.json(response.data );
     } else {
       res.status(response.status).json({ error: "Unexpected status code", statusCode: response.status });
     }
@@ -56,4 +58,3 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-export default app;
