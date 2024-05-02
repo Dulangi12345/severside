@@ -1,7 +1,10 @@
-let express = require('express');
-let bodyParser = require('body-parser')
-let axios =require('axios')
-let cors = require('cors')
+import express from 'express';
+import bodyParser from 'body-parser';
+import axios from 'axios';
+import cors from 'cors';
+import { pipeline } from 'stream';
+import got from 'got';
+
 
 const app = express();
 app.use(cors()); // Apply CORS middleware
@@ -30,23 +33,24 @@ app.get('/', (req, res) => {
 
 router.post('/api', async (req, res) => {
   try {
-    const response = await axios.post(`${API_SERVICE_URL}/api/sch/payments`, req.body, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    const response = await got.post(`${API_SERVICE_URL}/api/sch/payments`, {
+      json: req.body,
+      responseType: 'json'
     });
 
-    console.log(response.data);
-    console.log('External Server Status Code:', response.status);
-    if (response.status === 201) {
-      res.json(response.data );
+    console.log('Status Code:', response.statusCode);
+    console.log('Date in Response header:', response.headers.date);
+
+    if (response.statusCode === 201) {
+      res.status(201).json(response.body);
     } else {
-      res.status(response.status).json({ error: "Unexpected status code", statusCode: response.status });
+      res.status(response.statusCode).json({ error: "Unexpected status code", statusCode: response.statusCode });
     }
   } catch (error) {
     console.error(error);
+
     if (error.response) {
-      const statusCode = error.response.status;
+      const statusCode = error.response.statusCode;
       res.status(statusCode).json({ error: "External Server Error", statusCode });
     } else {
       res.status(500).json({ error: "Internal Server Error" });
