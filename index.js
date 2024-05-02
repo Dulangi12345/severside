@@ -33,21 +33,30 @@ app.get('/', (req, res) => {
 
 router.post('/api', async (req, res) => {
   try {
-    const response = await axios.post(`${API_SERVICE_URL}/api/sch/payments` ,req.body , {
-      headers : {
-        'Content-Type': 'application/json',
-
-      }
+    const response = await got.post(`${API_SERVICE_URL}/api/sch/payments`, {
+      json: req.body,
+      responseType: 'json'
     });
-    res.send(response.json)
 
+    console.log('Status Code:', response.statusCode);
+    console.log('Date in Response header:', response.headers.date);
 
-}catch(error) {
-  console.error(error);
+    if (response.statusCode === 201) {
+      res.status(201).json(response.body);
+    } else {
+      res.status(response.statusCode).json({ error: "Unexpected status code", statusCode: response.statusCode });
+    }
+  } catch (error) {
+    console.error(error);
 
-  res.status(500).json({ error: "Internal Server Error" });
-
-}})
+    if (error.response) {
+      const statusCode = error.response.statusCode;
+      res.status(statusCode).json({ error: "External Server Error", statusCode });
+    } else {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
